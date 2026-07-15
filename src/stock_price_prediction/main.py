@@ -10,6 +10,7 @@ from .forecast_model import build_quant_forecast, build_multi_horizon_forecast
 from .ir_scraper import get_ir_data
 from .news_analyzer import get_geopolitical_analysis
 from .company_master import resolve_from_master
+from .llm_analyzer import analyze_stock
 
 
 def collect_all_data(company_name: str) -> dict:
@@ -153,12 +154,29 @@ def collect_all_data(company_name: str) -> dict:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Collect stock data for analysis")
+    parser = argparse.ArgumentParser(description="Stock price prediction with LLM analysis")
     parser.add_argument("company", help="Company name (e.g., 'トヨタ自動車', 'Apple')")
+    parser.add_argument("--json", action="store_true", help="Output raw JSON data only (no LLM analysis)")
+    parser.add_argument("--model", default=None, help="LLM model name (default: OPENAI_MODEL env or gpt-4o)")
     args = parser.parse_args()
 
+    if args.model:
+        import os
+        os.environ["OPENAI_MODEL"] = args.model
+
     data = collect_all_data(args.company)
-    print(json.dumps(data, ensure_ascii=False, indent=2))
+    
+    if args.json:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        print("\n=== LLM Analysis ===\n", file=sys.stderr)
+        try:
+            analysis = analyze_stock(data)
+            print(analysis)
+        except ValueError as e:
+            print(f"\nError: {e}", file=sys.stderr)
+            print("\nFalling back to JSON output:\n", file=sys.stderr)
+            print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

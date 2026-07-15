@@ -9,12 +9,14 @@ LLMを活用した株価予測エージェント。企業のIR情報、株価推
 - **国際情勢分析**: Reuters、BBC、日経のRSSから地政学リスクを自動検出
 - **テクニカル分析**: 移動平均、モメンタム、ボラティリティの算出
 - **数値予測モデル**: 複数コンポーネントを加重した方向スコアを算出
+- **LLM分析**: OpenAI互換APIでAI分析を自動実行
 
 ## 構成
 
 ```
 src/stock_price_prediction/
-├── main.py              # メインスクリプト（データ収集・出力）
+├── main.py              # メインスクリプト
+├── llm_analyzer.py      # LLM分析モジュール
 ├── data_sources.py      # Yahoo Finance API
 ├── forecast_model.py    # 数値予測モデル
 ├── company_master.py    # 企業ティッカーマスタ
@@ -33,12 +35,30 @@ python -m venv .venv
 pip install -e .
 ```
 
+### APIキーの設定
+
+```bash
+# OpenAI APIを使用する場合
+export OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# その他のモデルを使用する場合
+export OPENAI_BASE_URL=https://your-api-endpoint.com/v1
+export OPENAI_MODEL=your-model-name
+```
+
 ## 使用法
 
 ### 基本的な使い方
 
 ```bash
+# LLM分析付き（デフォルト）
 python -m stock_price_prediction.main "トヨタ自動車"
+
+# JSONのみ出力（LLM分析なし）
+python -m stock_price_prediction.main "トヨタ自動車" --json
+
+# モデルを指定
+python -m stock_price_prediction.main "トヨタ自動車" --model gpt-4o
 ```
 
 ### 対応企業
@@ -65,47 +85,66 @@ python -m stock_price_prediction.main "トヨタ自動車"
 
 上記以外の企業もYahoo Finance検索で自動対応します。
 
-### 出力形式
+### 出力例
 
-JSON形式で以下を出力します：
-
-```json
-{
-  "ticker": "7203.T",
-  "company_name": "Toyota Motor Corporation",
-  "price_data": { ... },
-  "financial_data": { ... },
-  "macro_data": { ... },
-  "ir_data": { ... },
-  "geopolitical_data": { ... },
-  "quant_forecast": { ... },
-  "multi_horizon_forecast": { ... }
-}
-```
-
-## LLMによる分析
-
-このツールは**データ収集専用**です。LLM（GPT、Claudeなど）を直接使用しません。
-
-### 分析の流れ
-
-1. `python -m stock_price_prediction.main "企業名"` を実行
-2. 出力されたJSONをクリップボードにコピー
-3. LLM（ChatGPT、Claude、Geminiなど）に貼り付けて分析を依頼
-
-### 分析依頼テンプレート
+LLM分析が有効な場合、以下の分析が自動で出力されます：
 
 ```
-以下の株価データを分析して、1日後・1週間後・1か月後の株価予測を行ってください。
+=== トヨタ自動車（7203.T）株価予測分析 ===
 
-[JSONを貼り付け]
+1. テクニカル分析
+- 現在株価: 2,839円
+- 50日MA: 2,870円（下ブレイク）
+- 3ヶ月リターン: -16.11%
 
-以下の観点から分析してください：
-1. テクニカル分析（トレンド、移動平均、モメンタム）
-2. ファンダメンタル分析（財務データ、業績予想）
-3. マクロ経済（為替、金利、原油価格）
-4. 国際情勢（地政学リスク）
-5. IR情報（決算内容、業績予想）
+2. ファンダメンタル分析
+- 業績予想: 営業利益-20.3%
+- 配当利回り: 3.5%
+
+3. マクロ経済
+- USD/JPY: 162.19（円安）
+- 原油: -9.05%（コスト面でプラス）
+
+4. 国際情勢リスク: 高
+- 中東紛争が継続
+
+結論: 弱気（Bearish）
+```
+
+## LLMの設定
+
+### OpenAI APIを使用する場合
+
+```bash
+export OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### Ollama（ローカルLLM）を使用する場合
+
+```bash
+# Ollamaをインストール
+# https://ollama.com/
+
+# モデルをダウンロード
+ollama pull llama3
+
+# 設定
+export OPENAI_BASE_URL=http://localhost:11434/v1
+export OPENAI_MODEL=llama3
+export OPENAI_API_KEY=ollama
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### その他のOpenAI互換API
+
+```bash
+export OPENAI_BASE_URL=https://api.your-provider.com/v1
+export OPENAI_MODEL=your-model
+export OPENAI_API_KEY=your-key
+
+python -m stock_price_prediction.main "トヨタ自動車"
 ```
 
 ## 予測モデルの仕組み

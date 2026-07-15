@@ -1,10 +1,11 @@
 [project]
 name = "stock-price-prediction"
 version = "0.1.0"
-description = "Stock price prediction data collector with IR scraping and geopolitical analysis"
+description = "Stock price prediction agent with IR scraping, geopolitical analysis, and LLM-powered insights"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "openai>=1.0",
     "pydantic>=2.7",
     "beautifulsoup4>=4.12",
     "feedparser>=6.0",
