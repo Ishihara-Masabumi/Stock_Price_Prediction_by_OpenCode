@@ -78,6 +78,62 @@ python -m stock_price_prediction.main "トヨタ自動車" --model gpt-4o
 
 OpenCodeがサポートするLLMプロバイダーを使用できます。OpenCodeと同じ設定を環境変数で指定してください。
 
+### 無料のLLM API（クレジットカード不要）
+
+| プロバイダー | モデル例 | 制限 | BASE_URL |
+|-------------|----------|------|----------|
+| Google AI Studio | gemini-2.5-flash | 1500 req/day | 一部互換 |
+| Groq | llama-3.3-70b-versatile | 30 RPM | `https://api.groq.com/openai/v1` |
+| OpenRouter | 35+無料モデル | 200 req/day | `https://openrouter.ai/api/v1` |
+| GitHub Models | gpt-4.1 | Copilot制限 | `https://models.inference.ai.azure.com/v1` |
+| NVIDIA NIM | 100+モデル | 40 RPM | `https://integrate.api.nvidia.com/v1` |
+| Cerebras | gpt-oss-120b | 5 RPM | `https://api.cerebras.ai/v1` |
+| DeepSeek | deepseek-chat | 有料（安価） | `https://api.deepseek.com/v1` |
+
+#### Groq（推奨・最速）
+
+```bash
+# https://console.groq.com/ でAPIキー取得（クレジットカード不要）
+export OPENAI_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://api.groq.com/openai/v1
+export OPENAI_MODEL=llama-3.3-70b-versatile
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+#### OpenRouter（無料モデル多数）
+
+```bash
+# https://openrouter.ai/ でAPIキー取得（クレジットカード不要）
+export OPENAI_API_KEY=sk-or-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://openrouter.ai/api/v1
+export OPENAI_MODEL=meta-llama/llama-3.3-70b-instruct:free
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+#### NVIDIA NIM（100+モデル無料）
+
+```bash
+# https://build.nvidia.com/ でAPIキー取得（クレジットカード不要）
+export OPENAI_API_KEY=nvapi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://integrate.api.nvidia.com/v1
+export OPENAI_MODEL=meta/llama-3.3-70b-instruct
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+#### Cerebras（超高速推論）
+
+```bash
+# https://cloud.cerebras.ai/ でAPIキー取得（クレジットカード不要）
+export OPENAI_API_KEY=csk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://api.cerebras.ai/v1
+export OPENAI_MODEL=gpt-oss-120b
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
 ### OpenCode Zen（推奨）
 
 OpenCodeがテスト済みのモデルを提供しています。
