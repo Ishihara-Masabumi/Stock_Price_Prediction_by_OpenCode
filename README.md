@@ -9,7 +9,7 @@ LLMを活用した株価予測エージェント。企業のIR情報、株価推
 - **国際情勢分析**: Reuters、BBC、日経のRSSから地政学リスクを自動検出
 - **テクニカル分析**: 移動平均、モメンタム、ボラティリティの算出
 - **数値予測モデル**: 複数コンポーネントを加重した方向スコアを算出
-- **LLM分析**: OpenAI互換APIでAI分析を自動実行
+- **LLM分析**: OpenCodeのLLMでAI分析を自動実行
 
 ## 構成
 
@@ -33,17 +33,6 @@ python -m venv .venv
 # source .venv/bin/activate  # Linux/Mac
 
 pip install -e .
-```
-
-### APIキーの設定
-
-```bash
-# OpenAI APIを使用する場合
-export OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-# その他のモデルを使用する場合
-export OPENAI_BASE_URL=https://your-api-endpoint.com/v1
-export OPENAI_MODEL=your-model-name
 ```
 
 ## 使用法
@@ -85,47 +74,77 @@ python -m stock_price_prediction.main "トヨタ自動車" --model gpt-4o
 
 上記以外の企業もYahoo Finance検索で自動対応します。
 
-### 出力例
-
-LLM分析が有効な場合、以下の分析が自動で出力されます：
-
-```
-=== トヨタ自動車（7203.T）株価予測分析 ===
-
-1. テクニカル分析
-- 現在株価: 2,839円
-- 50日MA: 2,870円（下ブレイク）
-- 3ヶ月リターン: -16.11%
-
-2. ファンダメンタル分析
-- 業績予想: 営業利益-20.3%
-- 配当利回り: 3.5%
-
-3. マクロ経済
-- USD/JPY: 162.19（円安）
-- 原油: -9.05%（コスト面でプラス）
-
-4. 国際情勢リスク: 高
-- 中東紛争が継続
-
-結論: 弱気（Bearish）
-```
-
 ## LLMの設定
 
-### OpenAI APIを使用する場合
+OpenCodeがサポートするLLMプロバイダーを使用できます。OpenCodeと同じ設定を環境変数で指定してください。
+
+### OpenCode Zen（推奨）
+
+OpenCodeがテスト済みのモデルを提供しています。
 
 ```bash
-export OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# OpenCode ZenのAPIキーを設定（opencode.ai/authで取得）
+export OPENAI_API_KEY=your-opencode-zen-key
+export OPENAI_BASE_URL=https://api.opencode.ai/v1
+export OPENAI_MODEL=qwen3-coder-480b
+
 python -m stock_price_prediction.main "トヨタ自動車"
 ```
 
-### Ollama（ローカルLLM）を使用する場合
+### OpenAI（ChatGPT Plus/Pro）
 
 ```bash
-# Ollamaをインストール
-# https://ollama.com/
+export OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_MODEL=gpt-4o
 
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### GitHub Copilot
+
+```bash
+# GitHub Copilotのトークンを取得
+export OPENAI_API_KEY=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://api.githubcopilot.com/v1
+export OPENAI_MODEL=gpt-4o
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### Anthropic（Claude）
+
+```bash
+export OPENAI_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://api.anthropic.com/v1
+export OPENAI_MODEL=claude-sonnet-4-20250514
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### DeepSeek
+
+```bash
+export OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://api.deepseek.com/v1
+export OPENAI_MODEL=deepseek-chat
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### Groq（高速推論）
+
+```bash
+export OPENAI_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://api.groq.com/openai/v1
+export OPENAI_MODEL=llama-3.3-70b-versatile
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### Ollama（ローカルLLM）
+
+```bash
+# Ollamaをインストール: https://ollama.com/
 # モデルをダウンロード
 ollama pull llama3
 
@@ -137,12 +156,37 @@ export OPENAI_API_KEY=ollama
 python -m stock_price_prediction.main "トヨタ自動車"
 ```
 
+### LM Studio（ローカルLLM）
+
+```bash
+# LM Studioをインストール: https://lmstudio.ai/
+# サーバーを起動
+
+export OPENAI_BASE_URL=http://localhost:1234/v1
+export OPENAI_MODEL=your-model
+export OPENAI_API_KEY=lmstudio
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
+### OpenRouter（複数プロバイダー）
+
+```bash
+export OPENAI_API_KEY=sk-or-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+export OPENAI_BASE_URL=https://openrouter.ai/api/v1
+export OPENAI_MODEL=anthropic/claude-sonnet-4
+
+python -m stock_price_prediction.main "トヨタ自動車"
+```
+
 ### その他のOpenAI互換API
+
+OpenAI互換APIを持つプロバイダーであれば、以下の形式で設定できます：
 
 ```bash
 export OPENAI_BASE_URL=https://api.your-provider.com/v1
-export OPENAI_MODEL=your-model
-export OPENAI_API_KEY=your-key
+export OPENAI_MODEL=your-model-name
+export OPENAI_API_KEY=your-api-key
 
 python -m stock_price_prediction.main "トヨタ自動車"
 ```
